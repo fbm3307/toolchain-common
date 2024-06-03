@@ -1,0 +1,39 @@
+name: Check cross repo dependencies
+
+on: # yamllint disable-line rule:truthy
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  replaces:
+    name: Check cross repo dependencies 
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        include:
+          - repo: toolchain-e2e
+          - repo: host-operator
+
+
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.20"
+
+      # https://github.com/actions/checkout
+      #- name: Checkout Git Repository
+      #  uses: actions/checkout@v4
+      #  with:
+      #    repository: ${{ matrix.repo }}
+
+      - name: Run check
+        id: check-${{ matrix.repo }}
+        run: |
+          set -e -o pipefail
+          git clone --depth 1 ${{ matrix.repo }}
+          cd ${{ matrix.repo }}
+          go edit -replace https://github.com/codeready-toolchain/toolchain-common=https://github.com/${GITHUB_REPOSITORY}@${GITHUB_REF}
+          go mod tidy
+          go vet ./... || true 
