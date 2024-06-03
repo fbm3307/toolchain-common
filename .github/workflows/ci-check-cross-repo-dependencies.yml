@@ -22,11 +22,11 @@ jobs:
         with:
           go-version: "1.20"
 
-      # https://github.com/actions/checkout
-      #- name: Checkout Git Repository
-      #  uses: actions/checkout@v4
-      #  with:
-      #    repository: ${{ matrix.repo }}
+      #https://github.com/actions/checkout
+      - name: Checkout Git Repository
+        uses: actions/checkout@v4
+        with:
+          path: ${GITHUB_WORKSPACE}/toolchain-common
 
       - name: Run check
         id: check-repo
@@ -34,6 +34,6 @@ jobs:
           set -e -x -o pipefail
           git clone --depth 1 https://github.com/codeready-toolchain/${{ matrix.repo }}
           cd ${{ matrix.repo }}
-          go mod edit -replace github.com/codeready-toolchain/toolchain-common=github.com/${GITHUB_REPOSITORY}@${GITHUB_HEAD_REF}
+          go mod edit -replace github.com/codeready-toolchain/toolchain-common=../toolchain-common
           go mod tidy
           go vet ./... || true 
