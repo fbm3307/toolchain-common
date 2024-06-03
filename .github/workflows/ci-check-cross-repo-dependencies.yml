@@ -31,7 +31,7 @@ jobs:
       - name: Run check
         id: check-repo
         run: |
-          set -e -o pipefail
+          set -e -x -o pipefail
           git clone --depth 1 https://github.com/codeready-toolchain/${{ matrix.repo }}
           cd ${{ matrix.repo }}
           go edit -replace https://github.com/codeready-toolchain/toolchain-common=https://github.com/${GITHUB_REPOSITORY}@${GITHUB_REF}
