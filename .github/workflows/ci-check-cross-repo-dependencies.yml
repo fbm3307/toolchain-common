@@ -26,10 +26,11 @@ jobs:
       - name: Checkout Git Repository
         uses: actions/checkout@v4
         with:
-          path: ${GITHUB_WORKSPACE}/toolchain-common
+          path: ${{ github.workspace }}/toolchain-common
 
       - name: Run check
         id: check-repo
+        working-directory: ${{ github.workspace }}
         run: |
           set -e -x -o pipefail
           git clone --depth 1 https://github.com/codeready-toolchain/${{ matrix.repo }}
