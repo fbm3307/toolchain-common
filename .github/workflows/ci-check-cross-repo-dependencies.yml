@@ -13,7 +13,7 @@ jobs:
       matrix:
         include:
           - repo: toolchain-e2e
-          - repo: host-operator
+          - repo: registration-service
 
 
     steps:
