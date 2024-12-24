@@ -1,0 +1,22 @@
+name: verify-dependencies
+on:
+  push:
+    branches:
+      - master
+    tags-ignore:
+      - '*.*'
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  golangci:
+    name: Verify Dependencies
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Verify
+      run: |
+        make verify-replace-run
