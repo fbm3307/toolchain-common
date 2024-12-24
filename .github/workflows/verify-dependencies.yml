@@ -23,5 +23,6 @@ jobs:
         go-version-file: go.mod
 
     - name: Verify
+      uses: golangci/golangci-lint-action@v6
       run: |
         make verify-replace-run
