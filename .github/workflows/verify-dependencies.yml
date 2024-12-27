@@ -10,9 +10,15 @@ on:
       - master
 
 jobs:
-  golangci:
+  verify-dependencies:
     name: Verify Dependencies
     runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
+      id-token: write
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -28,3 +34,14 @@ jobs:
     - name: Verify
       run: |
         make verify-replace-run
+
+    - name: Comment
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: 'Thanks for the PR'
+          })
