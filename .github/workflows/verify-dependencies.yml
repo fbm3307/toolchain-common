@@ -33,7 +33,9 @@ jobs:
 
     - name: Verify
       run: |
-        make verify-replace-run
+        make verify-replace-run | source
+        echo 'test'
+        echo $ERRORREPOLIST
         echo $ERRORREPOLIST >> $GITHUB_ENV
     
     - name: Comment
