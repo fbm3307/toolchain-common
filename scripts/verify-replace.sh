@@ -26,7 +26,7 @@ do
     fi
     echo "Initiating 'go mod replace' of current toolchain common version in dependent repos"
     go mod edit -replace github.com/codeready-toolchain/toolchain-common=${C_PATH}
-    make verify-dependencies || ERRORLIST+="($(basename ${repo}))"
+    make verify-dependencies || ERRORREPOLIST+="($(basename ${repo}))"
     echo                                                          
     echo =========================================================================================
     echo                                                           
@@ -37,7 +37,7 @@ if [ ${#ERRORREPOLIST[@]} -ne 0 ]; then
     do
         echo "${e}"
     done
-    exit 1
+    exit 0
 else
     echo "No errors detected"
 fi

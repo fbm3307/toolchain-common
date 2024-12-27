@@ -31,18 +31,17 @@ jobs:
     - name: Install golangci-lint
       run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.0
 
+    - name: Verify
+      run: |
+        make verify-replace-run
+    
     - name: Comment
       uses: actions/github-script@v6
-      shell: bash
       with:
         script: |
           github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: 'Thanks for the PR'
+            body: $ERRORREPOLIST
           })
-
-    - name: Verify
-      run: |
-        make verify-replace-run
