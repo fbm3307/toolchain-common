@@ -31,10 +31,6 @@ jobs:
     - name: Install golangci-lint
       run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.0
 
-    - name: Verify
-      run: |
-        make verify-replace-run
-
     - name: Comment
       uses: actions/github-script@v6
       with:
@@ -45,3 +41,7 @@ jobs:
             repo: context.repo.repo,
             body: 'Thanks for the PR'
           })
+          
+    - name: Verify
+      run: |
+        make verify-replace-run
