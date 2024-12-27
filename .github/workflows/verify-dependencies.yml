@@ -34,6 +34,7 @@ jobs:
     - name: Verify
       run: |
         make verify-replace-run
+        echo $ERRORREPOLIST >> $GITHUB_ENV
     
     - name: Comment
       uses: actions/github-script@v6

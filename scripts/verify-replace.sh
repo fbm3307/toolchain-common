@@ -3,7 +3,7 @@ TMP_DIR=/tmp/
 BASE_REPO_PATH=$(mktemp -d ${TMP_DIR}replace-verify.XXX)
 GH_BASE_URL_KS=https://github.com/kubesaw/
 GH_BASE_URL_CRT=https://github.com/codeready-toolchain/
-declare -a REPOS=("${GH_BASE_URL_KS}ksctl" "${GH_BASE_URL_CRT}registration-service")
+declare -a REPOS=("${GH_BASE_URL_CRT}registration-service")
 C_PATH=${PWD}
 ERRORREPOLIST=()
 
