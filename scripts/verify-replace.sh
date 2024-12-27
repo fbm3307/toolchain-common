@@ -37,7 +37,7 @@ if [ ${#ERRORREPOLIST[@]} -ne 0 ]; then
     do
         echo "${e}"
     done
-    exit 0
+    exit 1
 else
     echo "No errors detected"
 fi

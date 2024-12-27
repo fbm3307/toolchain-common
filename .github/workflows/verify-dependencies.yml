@@ -34,10 +34,8 @@ jobs:
     - name: Verify
       shell: bash 
       run: |
-        make verify-replace-run
-        echo 'test'
-        echo $ERRORREPOLIST
-        echo $ERRORREPOLIST >> $GITHUB_ENV
+        ERROR=$(make verify-replace-run 2>&1 > /dev/null)
+        echo $ERROR  
     
     - name: Comment
       uses: actions/github-script@v6
@@ -47,5 +45,5 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: ${{ env.ERRORREPOLIST}}
+            body: 'Thanks for the PR'
           })
