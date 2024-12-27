@@ -33,6 +33,7 @@ jobs:
 
     - name: Comment
       uses: actions/github-script@v6
+      shell: bash
       with:
         script: |
           github.rest.issues.createComment({
@@ -41,7 +42,7 @@ jobs:
             repo: context.repo.repo,
             body: 'Thanks for the PR'
           })
-          
+
     - name: Verify
       run: |
         make verify-replace-run
