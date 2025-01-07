@@ -23,15 +23,12 @@ jobs:
       with:
         go-version-file: go.mod
 
-    - name: lint
-      
-        skip-pkg-cache: true
-        skip-build-cache: true
-
     - name: Verify
       uses: golangci/golangci-lint-action@v6
       with:
         version: v1.63.3
+        skip-pkg-cache: true
+        skip-build-cache: true
       run: |
         make verify-replace-run
     
