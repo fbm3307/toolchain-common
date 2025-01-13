@@ -7,7 +7,7 @@ declare -a REPOS=("${GH_BASE_URL_KS}ksctl" "${GH_BASE_URL_CRT}host-operator" "${
 C_PATH=${PWD}
 ERRORREPOLIST=()
 ERRORFILELIST=()
-ERRFILE=$(mktemp ${TMP_DIR}stderr.XXX)
+
 
 echo Initiating verify-replace on dependent repos
 for repo in "${REPOS[@]}"
@@ -18,6 +18,7 @@ do
     echo                                                                     
     echo =========================================================================================                                            
     repo_path=${BASE_REPO_PATH}/$(basename ${repo})
+    ERRFILE=$(mktemp ${TMP_DIR}$(basename ${repo}).XXX)
     echo "Cloning repo in /tmp"
     git clone --depth=1 ${repo} ${repo_path}
     echo "Repo cloned successfully"
@@ -28,10 +29,11 @@ do
     fi
     echo "Initiating 'go mod replace' of current toolchain common version in dependent repos"
     go mod edit -replace github.com/codeready-toolchain/toolchain-common=${C_PATH}
-    make verify-dependencies &> >(tee ${ERRFILE}) 
+    make verify-dependencies 2> ${ERRFILE} 
     rc=$?
     if [ ${rc} -ne 0 ]; then
     ERRORREPOLIST+="($(basename ${repo}))" 
+    ERRORFILELIST+="${ERRFILE}  "
     fi
     echo                                                          
     echo =========================================================================================
@@ -44,9 +46,11 @@ if [ ${#ERRORREPOLIST[@]} -ne 0 ]; then
     do
         echo "${e}"
     done
-    
-    cat "${ERRFILE}" | grep "Error:"
-    
+    for c in ${ERRORFILELIST[*]}
+    do
+        echo "${c} has the following errors "
+        cat "${c}" 
+    done
     exit 1
 else
     echo "No errors detected"
