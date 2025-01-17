@@ -7,7 +7,8 @@ declare -a REPOS=("${GH_BASE_URL_KS}ksctl" "${GH_BASE_URL_CRT}host-operator" "${
 C_PATH=${PWD}
 ERRORREPOLIST=()
 ERRORFILELIST=()
-
+GOLINTREGEX="[\s\w.\/]*:[0-9]*:[0-9]*:[\s\w]*[:]*[\s\w\">.-]*[\w\s)(*.]*"
+ERRORREGEX="Error[:]*"
 
 echo Initiating verify-replace on dependent repos
 for repo in "${REPOS[@]}"
@@ -29,7 +30,7 @@ do
     fi
     echo "Initiating 'go mod replace' of current toolchain common version in dependent repos"
     go mod edit -replace github.com/codeready-toolchain/toolchain-common=${C_PATH}
-    make verify-dependencies 2> ${ERRFILE} 
+    make verify-dependencies &> ${ERRFILE} 
     rc=$?
     if [ ${rc} -ne 0 ]; then
     ERRORREPOLIST+="($(basename ${repo}))" 
@@ -55,7 +56,7 @@ if [ ${#ERRORREPOLIST[@]} -ne 0 ]; then
         echo                                                          
         echo =========================================================================================
         echo
-        cat "${c}" 
+        cat "${c}" | grep "${GOLINTREGEX}\|${ERRORREGEX}"
     done
     exit 1
 else
