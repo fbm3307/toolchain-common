@@ -5,7 +5,8 @@ GH_BASE_URL_KS=https://github.com/kubesaw/
 GH_BASE_URL_CRT=https://github.com/codeready-toolchain/
 declare -a REPOS=("${GH_BASE_URL_KS}ksctl" "${GH_BASE_URL_CRT}host-operator" "${GH_BASE_URL_CRT}member-operator" "${GH_BASE_URL_CRT}registration-service" "${GH_BASE_URL_CRT}toolchain-e2e")
 C_PATH=${PWD}
-API_REPLACE=$(grep 'replace' go.mod)
+API_PATH=$(go mod edit -json | jq '.Replace[]?|select(.Old.Path=="github.com/codeready-toolchain/api")|.New.Path' -r)
+API_VERSION=$(go mod edit -json | jq '.Replace[]?|select(.Old.Path=="github.com/codeready-toolchain/api")|.New.Version' -r)
 ERROR_REPO_LIST=()
 ERROR_FILE_LIST=()
 STD_OUT_FILE_LIST=()
@@ -40,7 +41,9 @@ do
     fi
     echo "Initiating 'go mod replace' of current toolchain common version in dependent repos"
     go mod edit -replace github.com/codeready-toolchain/toolchain-common=${C_PATH}
-    echo ${API_REPLACE} >> go.mod
+    if [[ -n "${API_PATH}" ]]; then #check if there is any api replace in toolchain common - propogate the same to other repos along with tc
+    go mod edit -replace github.com/codeready-toolchain/api=${API_PATH}@${API_VERSION}
+    fi
     make verify-dependencies 2> >(tee ${err_file}) 1> >(tee ${std_out_file})
     rc=$?
     if [ ${rc} -ne 0 ]; then
