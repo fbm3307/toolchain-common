@@ -1,3 +1,10 @@
+# This script is written to check whether any changes to toolchain-common, 
+# related API changes need update/changes in other related repos or not
+# To run this script there is make command 'make verify-replace-run' or 
+# you can directly run this script.
+# if you have changes in toolchain common, run this scipt and it will 
+# give you the result with, if there needs to be any change/update in other repos.
+
 #!/bin/bash
 TMP_DIR=/tmp/
 BASE_REPO_PATH=$(mktemp -d ${TMP_DIR}replace-verify.XXX)
@@ -13,9 +20,9 @@ ERROR_REPO_LIST=()
 ERROR_FILE_LIST=()
 STD_OUT_FILE_LIST=()
 GO_LINT_REGEX="[\s\w.\/]*:[0-9]*:[0-9]*:[\w\s)(*.\`]*"
-#unit test or any other failure we log from our controllers or other places goes into stdoutput 
-#(since we log it and its not a failure in running the command or dependency check), 
-#hence making that regex too, to fetch the error more precisely
+# unit test or any other failure we log from our controllers or other places goes into stdoutput 
+# (since we log it and its not a failure in running the command or dependency check), 
+# hence making that regex too, to fetch the error more precisely
 ERROR_REGEX="[E\|e][R\|r][R\|r][O\|o][R\|r][:]*\|[F\|f][A\|a][I\|i][l\|L][:]*\|expected[:]*\|actual[:]*" 
 
 echo Initiating verify-replace on dependent repos
@@ -44,9 +51,9 @@ do
     fi
     echo "Initiating 'go mod replace' of current toolchain common version in dependent repos"
     go mod edit -replace ${TC_PATH}=${C_PATH}
-    #we are only fetching api replace and hence 
-    #check if there is any api replace in toolchain common - if there is
-    #propogate the same to other repos along with toolchaincommon replace
+    # we are only fetching api replace and hence 
+    # check if there is any api replace in toolchain common - if there is
+    # propogate the same to other repos along with toolchaincommon replace
     if [[ -n "${API_REPLACE_PATH}" ]]; then 
     echo "Initiating 'go mod replace' of api as replace of api is present in toolchain-common"
     go mod edit -replace ${API_PATH}=${API_REPLACE_PATH}@${API_REPLACE_VERSION}
