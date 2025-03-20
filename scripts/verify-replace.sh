@@ -5,15 +5,18 @@ GH_BASE_URL_KS=https://github.com/kubesaw/
 GH_BASE_URL_CRT=https://github.com/codeready-toolchain/
 declare -a REPOS=("${GH_BASE_URL_KS}ksctl" "${GH_BASE_URL_CRT}host-operator" "${GH_BASE_URL_CRT}member-operator" "${GH_BASE_URL_CRT}registration-service" "${GH_BASE_URL_CRT}toolchain-e2e")
 C_PATH=${PWD}
-API_PATH=$(go mod edit -json | jq '.Replace[]?|select(.Old.Path=="github.com/codeready-toolchain/api")|.New.Path' -r)
-API_VERSION=$(go mod edit -json | jq '.Replace[]?|select(.Old.Path=="github.com/codeready-toolchain/api")|.New.Version' -r)
+API_PATH=github.com/codeready-toolchain/api
+TC_PATH=github.com/codeready-toolchain/toolchain-common
+API_REPLACE_PATH=$(go mod edit -json | jq '.Replace[]?|select(.Old.Path=="github.com/codeready-toolchain/api")|.New.Path' -r)
+API_REPLACE_VERSION=$(go mod edit -json | jq '.Replace[]?|select(.Old.Path=="github.com/codeready-toolchain/api")|.New.Version' -r)
 ERROR_REPO_LIST=()
 ERROR_FILE_LIST=()
 STD_OUT_FILE_LIST=()
 GO_LINT_REGEX="[\s\w.\/]*:[0-9]*:[0-9]*:[\w\s)(*.\`]*"
-ERROR_REGEX="[E\|e][R\|r][R\|r][O\|o][R\|r][:]*\|[F\|f][A\|a][I\|i][l\|L][:]*\|expected[:]*\|actual[:]*" #unit test or any other failure we log from our controllers or other places goes into stdoutput 
-                                                            #(since we log it and its not a failure in running the command or dependency check), 
-                                                            #hence making that regex too, to fetch the error more precisely
+#unit test or any other failure we log from our controllers or other places goes into stdoutput 
+#(since we log it and its not a failure in running the command or dependency check), 
+#hence making that regex too, to fetch the error more precisely
+ERROR_REGEX="[E\|e][R\|r][R\|r][O\|o][R\|r][:]*\|[F\|f][A\|a][I\|i][l\|L][:]*\|expected[:]*\|actual[:]*" 
 
 echo Initiating verify-replace on dependent repos
 for repo in "${REPOS[@]}"
@@ -40,9 +43,13 @@ do
         continue
     fi
     echo "Initiating 'go mod replace' of current toolchain common version in dependent repos"
-    go mod edit -replace github.com/codeready-toolchain/toolchain-common=${C_PATH}
-    if [[ -n "${API_PATH}" ]]; then #check if there is any api replace in toolchain common - propogate the same to other repos along with tc
-    go mod edit -replace github.com/codeready-toolchain/api=${API_PATH}@${API_VERSION}
+    go mod edit -replace ${TC_PATH}=${C_PATH}
+    #we are only fetching api replace and hence 
+    #check if there is any api replace in toolchain common - if there is
+    #propogate the same to other repos along with toolchaincommon replace
+    if [[ -n "${API_REPLACE_PATH}" ]]; then 
+    echo "Initiating 'go mod replace' of api as replace of api is present in toolchain-common"
+    go mod edit -replace ${API_PATH}=${API_REPLACE_PATH}@${API_REPLACE_VERSION}
     fi
     make verify-dependencies 2> >(tee ${err_file}) 1> >(tee ${std_out_file})
     rc=$?
