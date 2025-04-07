@@ -2,7 +2,7 @@
 # related API changes need update/changes in other related repos or not
 # To run this script there is make command 'make verify-replace-run' or 
 # you can directly run this script.
-# if you have changes in toolchain common, run this scipt and it will 
+# if you have changes in toolchain-common, run this script and it will 
 # give you the result with, if there needs to be any change/update in other repos.
 
 #!/bin/bash
@@ -53,7 +53,7 @@ do
     go mod edit -replace ${TC_PATH}=${C_PATH}
     # we are only fetching api replace and hence 
     # check if there is any api replace in toolchain common - if there is
-    # propogate the same to other repos along with toolchaincommon replace
+    # propogate the same to other repos along with toolchain-common replace
     if [[ -n "${API_REPLACE_PATH}" ]]; then 
     echo "Initiating 'go mod replace' of api as replace of api is present in toolchain-common"
     go mod edit -replace ${API_PATH}=${API_REPLACE_PATH}@${API_REPLACE_VERSION}
