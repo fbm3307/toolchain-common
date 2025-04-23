@@ -54,7 +54,7 @@ do
     # we are only fetching api replace and hence 
     # check if there is any api replace in toolchain common - if there is
     # propogate the same to other repos along with toolchain-common replace
-    if [[ -n "${API_REPLACE_PATH}" ]]; then 
+    if [[ -n "${API_REPLACE_PATH}" && -n "${API_REPLACE_VERSION}" ]]; then 
     echo "Initiating 'go mod replace' of api as replace of api is present in toolchain-common"
     go mod edit -replace ${API_PATH}=${API_REPLACE_PATH}@${API_REPLACE_VERSION}
     fi
