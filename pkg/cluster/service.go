@@ -96,8 +96,21 @@ func (s *ToolchainClusterService) addToolchainCluster(log logr.Logger, toolchain
 			return err
 		}
 		if s.newClient == nil {
+			readerScheme := runtime.NewScheme()
+			readerScheme.AddKnownTypes(toolchainv1alpha1.GroupVersion,
+				&toolchainv1alpha1.TierTemplate{}, &toolchainv1alpha1.TierTemplateList{},
+				&toolchainv1alpha1.TierTemplateRevision{}, &toolchainv1alpha1.TierTemplateRevisionList{})
+			reader, err := client.NewWithWatch(clusterConfig.RestConfig, client.Options{
+				Scheme: readerScheme,
+			})
+			if err != nil {
+				return errors.Wrap(err, "cannot create ToolchainCluster client reader")
+			}
 			cl, err = client.New(clusterConfig.RestConfig, client.Options{
 				Scheme: scheme,
+				Cache: &client.CacheOptions{
+					Reader: reader,
+				},
 			})
 		} else {
 			cl, err = s.newClient(clusterConfig.RestConfig, client.Options{
